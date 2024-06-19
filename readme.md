@@ -1,66 +1,46 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Application-Covoiturage
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Lien vers le rapport : https://docs.google.com/document/d/1FEmSVF4R3Rnt58qpSaxe9GPGTrwyP19YiY8fTl6tdC8/edit
+##
 
-## About Laravel
+Ce projet a été proposé par la **base aérienne de Tours**. L'objectif de ce projet est de développer une PWA pour une application de covoiturage pour les trajets base-domicile des employés de la base. Il s'agit de la première version du projet, qui sera très poursuivi puis déployé.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Divers spécifications ont été réalisées au cours de ce projet que voici :
+- Maquettes : https://www.figma.com/design/5bxxEzcQX61w47TbJjTQNU/Projet-Covoiturage?node-id=0-1&t=Bm7lg3tBlHzsbef3-1
+- Cahier des charges : https://docs.google.com/document/d/1YKihpk38Q2iF9SrHuza7qxTZfvJx9xj1e1MXq_auaDg/edit
+- Cahier des spécifications : https://docs.google.com/document/d/16mo-7q7OLivZuXtgn2H9OZAAmHR6SNggWoWZn8zIPzI/edit
+- Diagramme de classes : https://lucid.app/lucidchart/f431214f-b9ae-4d07-9f59-7bb5505e7277/edit?invitationId=inv_d8c15314-95e6-48c6-933f-9d14d152dba1&page=0_0#
+- Cahier des recettes : https://docs.google.com/spreadsheets/d/1UXz8mWlxt1LOfOx1eiYVd3jOx3J5HOcdFvd6yuAHuMQ/edit#gid=0
+- Trello : https://trello.com/invite/b/hYGpoFQG/ATTIab71a4e6845c2b9e99e43672fa086e520B553879/covoiturage-pwa
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+# Pré-requis
+Pour pour pouvoir lancer l'application, vous devez configurer sur votre machine les outils suivants :
+- Pour le backend, **Php** (8.2.16) et **Composer** (2.7.2) : https://www.youtube.com/watch?v=pS0U-PsXUlg
+- Pour la base de données, **PostgreSQL** (16.2) : https://www.postgresql.org/download/
+- Pour le frontend, **Node** (21.6.0) (et **Vue.JS** (5.0.8)) : https://www.youtube.com/watch?v=tsDGFUiNZog
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Lors de la configuration de PostgreSQL, faites bien attention à définir votre username comme postgres et votre mot de passe comme password. Si vous n’avez pas cela, vous devrez modifier les champs DB_USERNAME et DB_PASSWORD de votre fichier .env.
 
-## Learning Laravel
+Une fois fait, vous devez saisir les commandes suivantes depuis une console ouverte dans le dossier _Application_ :
+- ```composer install```
+- ```npm install```
+- ```php artisan key:generate```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Vous devez ensuite créer une base de données _covoiturage_ (depuis **pgAdmin** par exemple), ainsi qu'un schéma dans cette base de données nommé _covoiturage_ également.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Vous pouvez ensuite automatiser la création des tables de cette base de donnée, ainsi que la génération de données fictives en saisissant ces 2 commandes depuis la console précédemment ouverte :
+- ```php artisan migrate```
+- ```php artisan db:seed```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+# Lancement de l'application
+A partir de 2 consoles ouvertes dans le dossier _Application_, vous pouvez lancer l'application en saisissant les 2 commandes suivantes dans chacunes des 2 consoles :
+- ```php artisan serve```
+- ```npm run dev```
 
-## Laravel Sponsors
+Vous accéder alors à l'interface de connexion, et pouvez vous créer un compte et naviguer dans l'application.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+##
 
-### Premium Partners
+Cheffe de Projet, Caroline Petit
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Arthur Crochemore, Cyril Jacques, Mohamed Sid Brahim, Jaafar Ghiffi et Adrien Amoroso
