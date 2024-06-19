@@ -134,8 +134,8 @@ input {
 }
 
 h1 {
-    margin-top: 10%;
-    margin-bottom: 20%;
+    margin-top: 2%;
+    margin-bottom: 4%;
 }
 
 p,
