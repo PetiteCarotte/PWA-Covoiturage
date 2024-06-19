@@ -1,0 +1,203 @@
+<template>
+    <div class="bloc-principal">
+      <button class="back-button" @click="goBack">&#8678; Retour</button>
+      <h1>Trajet Passager</h1>
+      <div>
+        <div class="detail"><p><span class="label">ID du trajet:</span> {{ trip.idTrajet }}</p><p class="conducteur"> <span class="label">Conducteur:</span> {{ trip.prenomConducteur }} {{ trip.nomConducteur }} </p></div>
+        <div class="detail"><p><span class="label">Date:</span> {{ trip.Date_Depart }}</p><p class="conducteur"> <span class="label">Unite:</span> {{ trip.uniteConducteur }} </p></div>
+        <p><span class="label">Départ:</span> {{ trip.ptDepart }}</p>
+        <p><span class="label">Arrivée:</span> {{ trip.ptArrive }}</p>
+      </div>
+
+      <h2 class="passengers-label">Passagers</h2>
+      <div class="passenger-info" v-for="passager in trip.passagers" :key="passager.id">
+        <p class="name"><span class="label">Nom:</span> {{ passager.prenomPassager }} {{ passager.nomPassager }}, <span class="label"> Unite :</span> {{ passager.unite }} </p>
+        <p class="contact-info">
+          <span class="route"><span class="label">Ville :</span> {{ passager.adresse.Ville }} </span>
+        </p>
+      </div>
+
+      <p class="passenger-count">{{ trip.nbPassagers }}/{{ trip.nbMaxPassagers }} passagers</p>
+      <div class="action-buttons">
+        <button class="reserver-button" @click="reserver">Réserver</button>
+      </div>
+    </div>
+  </template>
+
+
+<script setup>
+  import { onMounted, ref } from 'vue';
+  import { useRoute, useRouter } from 'vue-router';
+  import axios from 'axios'
+  import { inject } from 'vue'
+
+  const afficherMessageFunc = inject('afficherMessageFunc'); // Fonction qui gère l'affichage de messages généraux sur App_Connexion.vue
+
+  const props = defineProps({
+        idTrajet: Number,
+        idDomicile: Number
+    })
+
+const route = useRoute();
+const router = useRouter(); // Récupération du router vue-router pour la navigation
+const errorMessage = ref(null);
+
+    const idTrajet = ref(route.query.idTrajet);
+    const idDomicile = ref(route.query.idDomicile);
+
+  onMounted(() => {
+    fetchTripDetails();
+  });
+
+  const trip = ref({});
+
+  const fetchTripDetails = async () =>  {
+    try {
+        const response = await axios.get('/api/trajets/' + idTrajet.value)
+        trip.value = response.data
+    } catch (error) {
+        console.error('Error fetching trajets:', error)
+    }
+  }
+
+
+
+  function goBack() {
+    router.back();
+  }
+
+  function reserver() {
+
+    axios.post('/reserver-trajet', {
+        Id_Trajet: idTrajet.value,
+        Id_Adresse: props.idDomicile
+      })
+      .then(response => {
+        console.log(response);
+        afficherMessageFunc("La demande de réservation a été envoyée", "Succès");
+        router.push({
+            path: '/vos-trajets'
+        });
+      })
+      .catch(error => {
+        // afficherMessageFunc(error, "Erreur");
+        console.error(error);
+        afficherMessageFunc(error.response?.data?.error || 'Erreur inconnue', "Erreur");
+      });
+  }
+
+  </script>
+
+  <style scoped>
+  .bloc-principal {
+    padding: 20px;
+    overflow-y: auto;
+    color: black;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .back-button {
+    align-self: flex-start;
+    margin-bottom: 1rem;
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: #555;
+    font-size: 1rem;
+    font-weight: bold;
+  }
+
+  h1 {
+    margin-bottom: 20px;
+    color: #222;
+  }
+
+  .passengers-label {
+    margin-top: 20px;
+    font-size: 1.7rem;
+    color: #222;
+    text-align: left;
+    ;
+  }
+
+  .right-aligned {
+    float: right;
+    margin-right: 20px;
+  }
+
+  .passenger-info p {
+    clear: both;
+    padding-bottom: 10px;
+  }
+
+  .contact-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1rem;
+  }
+
+  .phone {
+    margin-right: 20px;
+  }
+
+  .route {
+    text-align: left;
+    flex: 1;
+  }
+
+  .detail {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .passenger-info {
+    background-color: #f0f0f0;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 10px;
+    border: 1px solid #ccc;
+  }
+
+  .label {
+    font-weight: bold;
+    color: #353535;
+  }
+
+  p {
+    font-size: 1rem;
+    line-height: 1.5;
+    margin-bottom: 0.5rem;
+  }
+
+  .passenger-count {
+    text-align: right;
+    font-size: 1.1rem;
+    margin: 20px 0;
+    color: #333;
+  }
+
+  .action-buttons {
+    margin-top: 20px;
+    text-align: center;
+  }
+
+  .reserver-button {
+    padding: 10px 20px;
+    margin: 0 10px;
+    font-size: 1rem;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  .reserver-button {
+    background-color: #f44336;
+  }
+
+  .reserver-button:hover {
+    background-color: #da190b;
+  }
+
+  </style>
