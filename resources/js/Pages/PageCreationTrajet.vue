@@ -38,13 +38,22 @@ const nombrePassagers = ref(props.nombrePassagers)
 const description = ref(props.description)
 const trajetRegulier = ref(Boolean(Number(props.trajetRegulier)))
 
-const lundi = ref(props.jours[0])
-const mardi = ref(props.jours[1])
-const mercredi = ref(props.jours[2])
-const jeudi = ref(props.jours[3])
-const vendredi = ref(props.jours[4])
-const samedi = ref(props.jours[5])
-const dimanche = ref(props.jours[6])
+// const lundi = ref(props.jours[0])
+// const mardi = ref(props.jours[1])
+// const mercredi = ref(props.jours[2])
+// const jeudi = ref(props.jours[3])
+// const vendredi = ref(props.jours[4])
+// const samedi = ref(props.jours[5])
+// const dimanche = ref(props.jours[6])
+
+// Gèrent le grisage de la date (trajet régulier)
+const dateId = ref(['non-grise', 'grise'])
+const indexBouttonSwitch = ref(0)
+const estGrise = ref(false)
+
+const jours = ref(['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']);
+const jourValeur = ref([false, false, false, false, false, false, false]); // Tableau pour le modèle des checkboxes
+
 
 /**
  * Récupère tout les domiciles de la base de données
@@ -92,37 +101,38 @@ onMounted(() => {
     recuperationBases()
 })
 
-// Gèrent le grisage de la date (trajet régulier)
-const dateId = ref(['non-grise', 'grise'])
-const indexBouttonSwitch = ref(0)
-const estGrise = ref(false)
-
 const changerIdGrise = () => {
     indexBouttonSwitch.value = (indexBouttonSwitch.value + 1) % dateId.value.length
     estGrise.value = !estGrise.value
 }
 
-const temp = ref() // Utilisé pour l'échange de données
-
 /**
  * Permet l'inversion du sens du trajet
  */
 const basculerTypeDeTrajet = () => {
-    temp.value = depart.value
-    depart.value = arrive.value
-    arrive.value = temp.value
+    // Inverser les valeurs des champs depart et arrive
+    const tempVal = depart.value;
+    depart.value = arrive.value;
+    arrive.value = tempVal;
 
-    booleenTrajetBaseDomicile.value = !booleenTrajetBaseDomicile.value
+    // Inverser les listes departs et arrives
+    const tempList = departs.value;
+    departs.value = arrives.value;
+    arrives.value = tempList;
+
+    // Inverser booleenTrajetBaseDomicile pour refléter le changement de sens du trajet
+    booleenTrajetBaseDomicile.value = !booleenTrajetBaseDomicile.value;
 
     /* Echange des propositions d'adresse entre les champs départ et arrivé */
-    if (trajetRegulier) {
-        departs.value = basesAeriennes.value
-        arrives.value = domiciles.value
+    if (booleenTrajetBaseDomicile.value) {
+        departs.value = basesAeriennes.value;
+        arrives.value = domiciles.value;
     } else {
-        departs.value = domiciles.value
-        arrives.value = basesAeriennes.value
+        departs.value = domiciles.value;
+        arrives.value = basesAeriennes.value;
     }
-}
+};
+
 
 const verificationChamps = () => {
     //Si un des champs est vide ou si le nombre de passagers inférieur à 1
@@ -143,8 +153,6 @@ const verificationChamps = () => {
 const pageSuivante = () => {
     if (verificationChamps()) {
         // Si tous les champs sont remplis, naviguer vers la page suivante
-        var jours = [lundi.value, mardi.value, mercredi.value, jeudi.value, vendredi.value, samedi.value, dimanche.value];
-
         router.push({
             path: '/creation-suivant',
             query: {
@@ -154,7 +162,7 @@ const pageSuivante = () => {
                 trajetRegulier: Number(trajetRegulier.value),
                 date: date.value,
                 heure: heure.value,
-                jours: jours,
+                jours: [jourValeur.value[0], jourValeur.value[1], jourValeur.value[2], jourValeur.value[3], jourValeur.value[4], jourValeur.value[5], jourValeur.value[6]],
                 bagages: bagage.value,
                 nombrePassagers: nombrePassagers.value,
                 description: description.value
@@ -162,125 +170,151 @@ const pageSuivante = () => {
         });
     }
 }
-
 </script>
 
 <template>
-    <div class="bloc-principal">
-        <div class="titre-bloc">
-            <h1 class="intitule-creation">Création d'un trajet</h1>
-        </div>
-        <div class="bloc-label-depart-arrive">
-            <div class="icone-map"></div>
-            <input list="liste-departs" v-model="depart" type="text" class="label" id="depart-label"
-                placeholder="Départ" />
-            <datalist id="liste-departs">
-                <option v-for="option in departs" :value="option.Intitule">{{ option.Intitule }}</option>
-            </datalist>
-        </div>
-        <div class="icone-arrows" @click="basculerTypeDeTrajet">
-        </div>
-        <div class="bloc-label-depart-arrive">
-            <div class="icone-map"></div>
-            <input list="liste-arrives" v-model="arrive" type="text" class="label" id="arrive-label"
-                placeholder="Arrivée" />
-            <datalist id="liste-arrives">
-                <option v-for="option in arrives" :value="option.Intitule">{{ option.Intitule }}</option>
-            </datalist>
-        </div>
-        <div class="date-et-heure">
-            <div class="trajet-regulier">
-                <div class="switch-container">
-                    <input type="checkbox" id="switch1" v-model="trajetRegulier" class="input-checkbox"
-                        @change="changerIdGrise">
-                    <label for="switch1" class="switch-label"></label>
+    <header role="banner" class="fr-header">
+        <div class="fr-header__body">
+            <div class="fr-container" id="container" style="padding-bottom: 15px;">
+                <div class="fr-header__body-row">
+                    <div class="fr-header__brand fr-enlarge-link">
+                        <div class="fr-header__brand-top">
+                            <div class="fr-header__logo">
+                                <a href="/">
+                                    <img src="/assets/logoapp.png" alt="Logo OuestGo" class="fr-logo-img" />
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <p class="intitule-trajet-regulier">Trajet Regulier</p>
-            </div>
-
-        </div>
-
-        <div class="date-et-heure">
-            <div class="bloc-date" :id="dateId[indexBouttonSwitch]">
-                <input type="date" v-model="date" :disabled="estGrise">
-            </div>
-            <div class="bloc-heure">
-                <input type="time" v-model="heure">
             </div>
         </div>
-        <div v-if="trajetRegulier" class="switch-container" id="switchregulier">
-            <input type="checkbox" id="lundi" class="checkbox-input" v-model="lundi">
-            <label for="lundi" class="checkbox-label2">Lundi</label>
-            <input type="checkbox" id="mardi" class="checkbox-input" v-model="mardi">
-            <label for="mardi" class="checkbox-label2">Mardi</label>
-            <input type="checkbox" id="mercredi" class="checkbox-input" v-model="mercredi">
-            <label for="mercredi" class="checkbox-label2">Mercredi</label>
-            <input type="checkbox" id="jeudi" class="checkbox-input" v-model="jeudi">
-            <label for="jeudi" class="checkbox-label2">Jeudi</label>
-            <input type="checkbox" id="vendredi" class="checkbox-input" v-model="vendredi">
-            <label for="vendredi" class="checkbox-label2">Vendredi</label>
-            <input type="checkbox" id="samedi" class="checkbox-input" v-model="samedi">
-            <label for="samedi" class="checkbox-label2">Samedi</label>
-            <input type="checkbox" id="dimanche" class="checkbox-input" v-model="dimanche">
-            <label for="dimanche" class="checkbox-label2">Dimanche</label>
-        </div>
+    </header>
+    <div class="fr-container" id="main-container">
+        <div class="fr-grid-row fr-grid-row--center">
+            <div class="fr-col-12 fr-col-md-6">
+                <h1 class="fr-h3">Publier un trajet</h1>
 
-        <div class="bagage">
-            <select class="select-bagage" v-model="bagage">
-                <option value="1">Beaucoup</option>
-                <option value="2">Moyen</option>
-                <option value="3">Peu</option>
-            </select>
-            <label class="checkbox-label">Bagages</label>
-        </div>
+                <!-- Départ -->
+                <div class="fr-input-group fr-my-2w">
+                    <label for="depart" class="fr-label">Départ</label>
+                    <div class="fr-input-wrap">
+                        <input list="liste-departs" v-model="depart" type="text" class="fr-input" id="depart"
+                            placeholder="Départ" />
+                        <datalist id="liste-departs">
+                            <option v-for="option in departs" :value="option.Intitule">{{ option.Intitule }}</option>
+                        </datalist>
+                    </div>
+                </div>
+                <div class="fr-input-group fr-my-2w">
+                    <button class="icone-arrows" @click="basculerTypeDeTrajet">
+                    </button>
+                </div>
 
-        <div class="passagers">
-            <input class="input-passagers" type="number" v-model="nombrePassagers">
-            <label class="checkbox-label">Passagers</label>
-        </div>
-        <div class="description-area">
-            <label class="checkbox-label">Description:</label>
-            <textarea class="text-area" v-model="description"></textarea>
-        </div>
-        <div class="suivant" @click="pageSuivante">
-            <p class="intitule-suivant">Suivant</p>
+            <!-- Arrivée -->
+                <div class="fr-input-group fr-my-2w">
+                    <label for="arrive" class="fr-label">Arrivée</label>
+                    <div class="fr-input-wrap">
+                        <input list="liste-arrives" v-model="arrive" type="text" class="fr-input" id="arrive"
+                            placeholder="Arrivée" />
+                        <datalist id="liste-arrives">
+                            <option v-for="option in arrives" :value="option.Intitule">{{ option.Intitule }}</option>
+                        </datalist>
+                    </div>
+                </div>
+
+                <!-- Date et Heure -->
+                <div class="fr-grid-row fr-grid-row--gutters">
+                    <div class="fr-col-6">
+                        <div class="fr-input-group fr-my-2w">
+                            <label for="date" class="fr-label">Date</label>
+                            <input type="date" v-model="date" class="fr-input" id="date" :disabled="trajetRegulier" />
+                        </div>
+                    </div>
+                    <div class="fr-col-6">
+                        <div class="fr-input-group fr-my-2w">
+                            <label for="heure" class="fr-label">Heure</label>
+                            <input type="time" v-model="heure" class="fr-input" id="heure" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Trajet régulier et jours-->
+                <div class="fr-checkbox-group fr-my-2w">
+                    <input type="checkbox" id="trajetRegulier" class="fr-checkbox-input" v-model="trajetRegulier"
+                        @change="changerIdGrise" />
+                    <label for="trajetRegulier" class="fr-label">Trajet Régulier</label>
+                </div>
+
+                <div v-if="trajetRegulier" class="fr-grid-row fr-grid-row--gutters">
+                    <div class="fr-checkbox-group fr-my-2w fr-col-4" v-for="(jour, index) in jours" :key="index">
+                        <input type="checkbox" :id="jour" class="fr-checkbox-input" v-model="jourValeur[index]" />
+                        <label :for="jour" class="fr-label">{{ jour }}</label>
+                    </div>
+                </div>
+
+                <!-- Bagages -->
+                <div class="fr-input-group fr-mt-3w">
+                    <label class="fr-label">Bagages</label>
+                    <select class="fr-select" v-model="bagage">
+                        <option value="1">Beaucoup</option>
+                        <option value="2">Moyen</option>
+                        <option value="3">Peu</option>
+                    </select>
+                </div>
+
+                <!-- Passagers -->
+                <div class="fr-input-group fr-mt-3w">
+                    <label class="fr-label">Passagers</label>
+                    <input type="number" class="fr-input" v-model="nombrePassagers">
+                </div>
+
+                <!-- Description -->
+                <div class="fr-input-group fr-mt-3w">
+                    <label class="fr-label">Description</label>
+                    <textarea class="fr-textarea custom-textarea" v-model="description" rows="2"></textarea>
+                </div>
+
+                <!-- Bouton Suivant -->
+                <div class="fr-grid-row fr-grid-row--center fr-mt-3w">
+                    <div class="fr-col-auto">
+                        <button class="fr-btn fr-btn--secondary" @click="pageSuivante">Suivant</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+
 </template>
 
 
 <style scoped>
-.titre-bloc {
-    background-color: #dddddd;
-    width: 90%;
-    height: 80px;
-    margin: auto 5%;
-    border-radius: 30px;
+.fr-logo-img {
+    max-height: 60px; 
+    width: auto; 
+    display: block; 
+    margin: 0 auto; 
+    border-radius: 10%;
+    justify-content: center;
+}
+.fr-select{
+    width: 50%;
 }
 
-.intitule-creation {
-    color: black;
-    text-align: center;
-    font-size: 30px;
-    margin-top: 12px;
-}
-
-.bloc-label-depart-arrive {
+.fr-container#maincontainer {
+    min-height: 100vh;
     display: flex;
-    flex-direction: row;
-    height: 50px;
-    width: 75%;
-    margin-left: 12.5%;
+    flex-direction: column;
     justify-content: space-between;
+    padding-bottom: 20px;
 }
 
-.icone-map {
-    background: url('assets/icons/navigation-map-marker.png');
-    background-size: 30px 30px;
-    background-repeat: no-repeat;
-    background-position: center;
-    width: 50px;
-    height: 50px;
+.fr-grid-row {
+    flex: 1;
+}
+
+.fr-h3 {
+    padding-top: 20px;
 }
 
 .icone-arrows {
@@ -288,15 +322,24 @@ const pageSuivante = () => {
     background-size: 30px 30px;
     background-repeat: no-repeat;
     background-position: center;
-    width: 50px;
-    height: 50px;
-    margin-left: 20%;
+    width: 100%;
+    height: 25px;
+    justify-content: center;
 }
 
-button {
-    background-color: transparent;
-    border: none;
-    cursor: pointer;
+.fr-btn {
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 10;
+}
+
+.fr-textarea.custom-textarea {
+    background-color: white;
+    border: 1px solid #ccc; 
+    padding: 8px;
+    font-size: 14px;
+    width: 100%; 
+    height: auto;
 }
 
 .label {
@@ -307,16 +350,6 @@ button {
 }
 
 .bagage {
-    display: flex;
-    flex-direction: row;
-    width: 80%;
-    margin-left: 10%;
-    height: 50px;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.passagers {
     display: flex;
     flex-direction: row;
     width: 80%;
@@ -337,44 +370,6 @@ input[type="number"] {
     color: black;
 }
 
-.description-area {
-    display: flex;
-    flex-direction: row;
-    width: 80%;
-    margin-top: 10px;
-    margin-left: 10%;
-    height: 50px;
-    justify-content: space-between;
-    align-items: flex-start;
-}
-
-.text-area {
-    width: 80%;
-    padding: 5px;
-    margin-left: 10%;
-    color: black;
-    border: 1px solid black;
-    border-radius: 5px;
-
-}
-
-.date-et-heure {
-    display: flex;
-    flex-direction: row;
-    width: 80%;
-    margin-top: 10px;
-    margin-left: 10%;
-    height: 50px;
-
-    justify-content: space-between;
-}
-
-.bloc-date,
-.bloc-heure {
-    display: flex;
-    flex-direction: row;
-}
-
 input[type="date"],
 input[type="time"] {
     width: 100%;
@@ -391,142 +386,27 @@ input[type="time"] {
     clear: both;
 }
 
-.icone-date {
-    background: url('assets/icons/recherche-calendrier.png');
-    background-size: 30px 30px;
-    background-repeat: no-repeat;
-    background-position: center;
-    width: 50px;
-    height: 50px;
-    padding-right: 50px;
-    padding-bottom: 10px;
+@media only screen and (max-width: 600px) {
+    .fr-container {
+        padding-bottom: 75px;
+    }
 }
 
-.icone-heure {
-    background: url('assets/icons/recherche-horloge.png');
-    background-size: 30px 30px;
-    background-repeat: no-repeat;
-    background-position: center;
-    width: 50px;
-    height: 50px;
-    padding-right: 50px;
-    padding-bottom: 10px;
+@media only screen and (max-width: 1024px) { 
+    .fr-container {
+        padding-bottom: 75px;
+    }
 }
 
-.input-checkbox {
-    display: none;
+@media only screen and (max-width: 1440px) { 
+    .fr-container {
+        padding-bottom: 75px;
+    }
 }
 
-.switch-label {
-    display: block;
-    width: 50px;
-    height: 30px;
-    background-color: #ccc;
-    border-radius: 20px;
-    position: relative;
-    cursor: pointer;
-    margin-right: 5px;
-}
-
-.input-checkbox:checked+.switch-label {
-    background-color: #007bff;
-}
-
-.switch-label::after {
-    content: "";
-    position: absolute;
-    top: 4px;
-    left: 4px;
-    width: 22px;
-    height: 22px;
-    background-color: white;
-    border-radius: 50%;
-    transition: transform 0.3s;
-}
-
-.input-checkbox:checked+.switch-label::after {
-    transform: translateX(20px);
-}
-
-#grise {
-    filter: opacity(50%);
-    transition: filter 0.5s ease;
-}
-
-#non-grise {
-    filter: opacity(100%);
-    transition: filter 0.5s ease;
-}
-
-p {
-    border-top: 5px;
-    color: black;
-}
-
-.trajet-regulier {
-    display: flex;
-    flex-direction: row;
-    height: 50px;
-    width: 250px;
-    margin-left: 0%;
-    text-align: center;
-    justify-content: flex-start;
-
-}
-
-.intitule-trajet-regulier {
-    margin-left: 2%;
-}
-
-.checkbox-label {
-    color: black;
-    font-size: 20px;
-}
-
-.checkbox-label2 {
-    color: black;
-    font-size: 20px;
-    margin-right: 5%;
-    margin-left: 2%;
-
-}
-
-.switch-container {
-    display: flex;
-    align-items: center;
-    margin-left: 2.5%;
-    position: relative;
-    align-items: baseline;
-
-
-}
-
-.switch-container#switchregulier {
-    color: black;
-    flex-wrap: wrap;
-    justify-content: center;
-}
-
-.suivant {
-    background-color: #bbbbbb;
-    width: 120px;
-    height: 40px;
-    margin: auto;
-    border-radius: 10px;
-}
-
-.intitule-suivant {
-    padding-top: 3px;
-    text-align: center;
-}
-
-p,
-input {
-    font-size: 20px;
-}
-
-v-digital-time-picker {
-    width: 100px;
-    height: 100px;
+@media only screen and (max-width: 1920px) { 
+    .fr-container {
+        padding-bottom: 75px;
+    }
 }
 </style>

@@ -32,7 +32,7 @@ const continuer = async () => {
         try {
             const response = await axios.get('/verifier-email/' + encodeURI(mail.value));
             console.log(response.data);
-            
+
             if (response.data) {
                 afficherMessageFunc("Cette adresse email est déjà utilisée.", "Erreur");
             } else {
@@ -71,8 +71,8 @@ const annuler = () => {
 </script>
 
 <template>
-    <div class="bloc-principal">
-        <div class="fr-container">
+
+    <div class="fr-container">
         <h1 class="fr-h1">Inscription</h1>
         <div class="fr-grid-row fr-grid-row--center fr-mb-3w">
             <div class="fr-col-12 fr-col-md-6">
@@ -86,39 +86,35 @@ const annuler = () => {
                 </div>
                 <div class="fr-input-group fr-mt-2w">
                     <label for="motdepasse" class="fr-label">Mot de Passe</label>
-                    <input type="password" id="motdepasse" class="fr-input" v-model="motdepasse" placeholder="Mot de Passe" />
+                    <input type="password" id="motdepasse" class="fr-input" v-model="motdepasse"
+                        placeholder="Mot de Passe" />
                 </div>
                 <div class="fr-input-group fr-mt-2w">
                     <label for="confirmationmotdepasse" class="fr-label">Confirmer le mot de Passe</label>
-                    <input type="password" id="confirmationmotdepasse" class="fr-input" v-model="confirmationmotdepasse" placeholder="Confirmer le mot de Passe" />
+                    <input type="password" id="confirmationmotdepasse" class="fr-input" v-model="confirmationmotdepasse"
+                        placeholder="Confirmer le mot de Passe" />
                 </div>
                 <div class="fr-grid-row fr-grid-row--gutters fr-mt-3w">
-                    <div class="fr-col">
+                    <div class="fr-col-auto sub">
                         <button class="fr-btn fr-btn--secondary" @click="annuler">Annuler</button>
                     </div>
-                    <div class="fr-col">
+                    <div class="fr-col-auto">
                         <button class="fr-btn" @click="continuer">Continuer</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    </div>
+
 </template>
 
 <style scoped>
-.bloc-label {
-    display: flex;
-    flex-direction: row;
-    height: 50px;
-    width: 75%;
-    margin-left: 12.5%;
+.fr-grid-row--gutters {
     justify-content: space-between;
-    margin-bottom: 10px;
 }
 
 input {
-    width: 90%;
+    width: 100%;
     font-size: medium;
     border: none;
     border-bottom: 1px solid #dddddd;
@@ -141,8 +137,8 @@ input {
 }
 
 h1 {
-    margin-top: 10%;
-    margin-bottom: 10%;
+    margin-top: 2%;
+    margin-bottom: 2%;
 }
 
 
@@ -172,5 +168,28 @@ h1 {
 .lien-mot-de-passe-oublie {
     border-top: auto;
     justify-content: right;
+}
+@media only screen and (max-width: 600px) {
+    .fr-container {
+        padding-bottom: 75px;
+    }
+}
+
+@media only screen and (max-width: 1024px) {
+    .fr-container {
+        padding-bottom: 75px;
+    }
+}
+
+@media only screen and (max-width: 1440px) {
+    .fr-container {
+        padding-bottom: 75px;
+    }
+}
+
+@media only screen and (max-width: 1920px) {
+    .fr-container {
+        padding-bottom: 75px;
+    }
 }
 </style>

@@ -1,35 +1,44 @@
 <template>
-  <div class="bloc-principal">
-    <button class="back-button" @click="goBack">&#8678; Retour</button>
-    <h1>Trajet Passager</h1>
-    <div>
-      <div class="detail">
-        <p><span class="label">ID du trajet:</span> {{ trip.idTrajet }}</p>
-        <p class="conducteur"> <span class="label">Conducteur:</span> {{ trip.prenomConducteur }} {{ trip.nomConducteur
-          }} </p>
+  <div class="fr-container fr-mt-4w">
+    <div class="fr-grid-row fr-grid-row--gutters">
+      <div class="fr-col-12">
+
+        <button class="fr-btn fr-fi-arrow-left-line fr-btn--icon-left" @click="goBack">Retour</button>
+        <h1 class="fr-h2 fr-mt-3w">Mon trajet en passager</h1>
+        <div>
+          <div class="fr-col-12">
+            <h4 class="fr-h4 fr-mt-3w">Conducteur</h4>
+            <div class="">
+              <p class="conducteur"> <span class="label">Nom:</span> {{ trip.prenomConducteur }} {{ trip.nomConducteur
+                }} </p>
+              <p class="conducteur"> <span class="label">Unité:</span> {{ trip.uniteConducteur }} </p>
+            </div>
+            <h4 class="fr-h4 fr-mt-3w">Informations</h4>
+            <div class="">
+              <p><span class="label">Date de départ:</span> {{ trip.Date_Depart }}</p>
+              <p><span class="label">Départ:</span> {{ trip.ptDepart }}</p>
+              <p><span class="label">Arrivée:</span> {{ trip.ptArrive }}</p>
+            </div>
+            <h4 class="fr-h4 fr-mt-3w">Passagers enregistrés</h4>
+            <div class="passenger-info" v-for="passager in trip.passagers" :key="passager.id">
+              <p class="name"><span class="label">Nom:</span> {{ passager.prenomPassager }} {{ passager.nomPassager }}</p>
+              <p class="unite"><span class="label"> Unité:</span> {{ passager.unite }}</p>
+              <p class="contact-info">
+                <span class="route"><span class="label">Commune:</span> {{ passager.adresse.Ville }} <div
+                    v-if="passager.statut == 0" class="reservation">Réservation en attente d'acceptation ...</div>
+                </span>
+              </p>
+            </div>
+            <p class="passenger-count">{{ trip.nbPassagers }}/{{ trip.nbMaxPassagers }} passagers</p>
+            <div class="action-buttons">
+              <button class="fr-btn fr-btn--success" @click="annuler">Annuler ma réservation</button>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="detail">
-        <p><span class="label">Date:</span> {{ trip.Date_Depart }}</p>
-        <p class="conducteur"> <span class="label">Unite:</span> {{ trip.uniteConducteur }} </p>
-      </div>
-      <p><span class="label">Départ:</span> {{ trip.ptDepart }} </p>
-      <p><span class="label">Arrivée:</span> {{ trip.ptArrive }} </p>
-      <p><span class="label"> {{ trip.heure }}</span></p>
-    </div>
-    <h2 class="passengers-label">Passagers</h2>
-    <div class="passenger-info" v-for="passager in trip.passagers" :key="passager.id">
-      <p class="name"><span class="label">Nom:</span> {{ passager.prenomPassager }} {{ passager.nomPassager }}, <span
-          class="label"> Unite :</span> {{ passager.unite }}</p>
-      <p class="contact-info">
-        <span class="route"><span class="label">Ville :</span> {{ passager.adresse.Ville }} <div
-            v-if="passager.statut == 0" class="reservation">Réservation en attente d'acceptation ...</div></span>
-      </p>
-    </div>
-    <p class="passenger-count">{{ trip.nbPassagers }}/{{ trip.nbMaxPassagers }} passagers</p>
-    <div class="action-buttons">
-      <button class="delete-button" @click="annuler">Annuler</button>
     </div>
   </div>
+
 </template>
 
 
@@ -86,6 +95,9 @@ async function annuler() {
 </script>
 
 <style scoped>
+.reservation{
+  color : orange;
+}
 .bloc-principal {
   padding: 20px;
   overflow-y: auto;
@@ -166,7 +178,7 @@ h1 {
 }
 
 .passenger-info {
-  background-color: #f0f0f0;
+  background-color: white;
   padding: 15px;
   border-radius: 8px;
   margin-top: 10px;
@@ -222,5 +234,28 @@ p {
 
 .delete-button:hover {
   background-color: #da190b;
+}
+@media only screen and (max-width: 600px) {
+    .fr-container {
+        padding-bottom: 75px;
+    }
+}
+
+@media only screen and (max-width: 1024px) {
+    .fr-container {
+        padding-bottom: 75px;
+    }
+}
+
+@media only screen and (max-width: 1440px) {
+    .fr-container {
+        padding-bottom: 75px;
+    }
+}
+
+@media only screen and (max-width: 1920px) {
+    .fr-container {
+        padding-bottom: 75px;
+    }
 }
 </style>

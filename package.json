@@ -8,7 +8,7 @@
     "devDependencies": {
         "@popperjs/core": "^2.11.6",
         "@vitejs/plugin-vue": "^4.5.0",
-        "axios": "^1.6.4",
+        "axios": "^1.7.2",
         "bootstrap": "^5.2.3",
         "laravel-vite-plugin": "^1.0.0",
         "sass": "^1.56.1",
@@ -19,6 +19,9 @@
         "@gouvfr/dsfr": "^1.11.2",
         "@inertiajs/vue3": "^1.0.16",
         "@vitejs/plugin-vue": "^5.0.4",
+        "pg": "^8.12.0",
+        "pg-hstore": "^2.3.4",
+        "sequelize": "^6.37.3",
         "vue": "^3.4.27",
         "vue-router": "^4.3.2"
     }

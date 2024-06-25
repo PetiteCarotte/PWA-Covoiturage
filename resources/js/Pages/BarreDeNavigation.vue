@@ -1,4 +1,4 @@
-<!-- Barre en bas de l'interface de l'application qui permet la navigation dans celle-ci -->
+<!-- Barre en bas de l'interface de l'application qui permet la navigation dans celle-ci
 <script setup>
   import { ref } from 'vue'
   import { useRouter } from 'vue-router'
@@ -179,4 +179,169 @@
             background-position: center;
         }
     }
+</style> -->
+
+<template>
+  <div class="fr-bottom-nav">
+    <div
+      class="fr-bottom-nav__item"
+      :class="{ 'fr-bottom-nav__item--active': idSelectione === 'recherche' }"
+      @click="ouvrirRecherche('/recherche', 'recherche')"
+    >
+      <i class="fr-bottom-nav__icon icon-recherche"></i>
+      <span class="fr-bottom-nav__label">Rechercher</span>
+    </div>
+    <div
+      class="fr-bottom-nav__item"
+      :class="{ 'fr-bottom-nav__item--active': idSelectione === 'creation' }"
+      @click="ouvrirCreation('/creation-trajet', 'creation')"
+    >
+      <i class="fr-bottom-nav__icon icon-creation"></i>
+      <span class="fr-bottom-nav__label">Publier</span>
+    </div>
+    <div
+      class="fr-bottom-nav__item"
+      :class="{ 'fr-bottom-nav__item--active': idSelectione === 'vos trajet' }"
+      @click="ouvrir('/vos-trajets', 'vos trajet')"
+    >
+      <i class="fr-bottom-nav__icon icon-vos-trajets"></i>
+      <span class="fr-bottom-nav__label">Vos trajets</span>
+    </div>
+    <div
+      class="fr-bottom-nav__item"
+      :class="{ 'fr-bottom-nav__item--active': idSelectione === 'profil' }"
+      @click="ouvrir('/profil', 'profil')"
+    >
+      <i class="fr-bottom-nav__icon icon-profil"></i>
+      <span class="fr-bottom-nav__label">Profil</span>
+    </div>
+    <div
+      class="fr-bottom-nav__item"
+      :class="{ 'fr-bottom-nav__item--active': idSelectione === 'message' }"
+      @click="ouvrir('/message', 'message')"
+    >
+      <i class="fr-bottom-nav__icon icon-message"></i>
+      <span class="fr-bottom-nav__label">Messages</span>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+const idSelectione = ref('recherche')
+const router = useRouter()
+
+const updateSelection = (id) => {
+  idSelectione.value = id
+}
+
+const ouvrir = (lien, id) => {
+  updateSelection(id)
+  router.push({ path: lien })
+}
+
+const ouvrirRecherche = (lien, id) => {
+  updateSelection(id)
+  router.push({
+    path: lien,
+    query: { ptDepart: '', ptArrive: '' }
+  })
+}
+
+const ouvrirCreation = (lien, id) => {
+  updateSelection(id)
+
+  const maintenant = new Date()
+  const anneeActuelle = maintenant.getFullYear()
+  const moisActuel = maintenant.getMonth() + 1
+  const jourActuel = maintenant.getDate()
+
+  const date = `${anneeActuelle}-${moisActuel.toString().padStart(2, '0')}-${jourActuel.toString().padStart(2, '0')}`
+  const heure = `${maintenant.getHours().toString().padStart(2, '0')}:${maintenant.getMinutes().toString().padStart(2, '0')}`
+
+  router.push({
+    path: lien,
+    query: {
+      ptDepart: '',
+      ptArrive: '',
+      booleenTrajetBaseDomicile: 0,
+      trajetRegulier: 0,
+      date,
+      heure,
+      jours: [true, true, true, true, true, true, true],
+      bagages: 1,
+      nombrePassagers: 3,
+      description: ''
+    }
+  })
+}
+</script>
+
+<style scoped>
+.fr-bottom-nav {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  background-color: #ffffff;
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1000; /* Assure que la barre de navigation reste au-dessus du contenu */
+}
+
+.fr-bottom-nav__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  text-align: center;
+  color: #666666;
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.fr-bottom-nav__item:hover {
+  background-color: #f0f0f0;
+}
+
+.fr-bottom-nav__item--active {
+  color: #000091;
+}
+
+.icon-recherche {
+  background: url('/assets/icons/navigation-recherche.png') no-repeat center center;
+  background-size: 24px 24px; /* Ajuster la taille selon vos besoins */
+}
+
+.icon-creation {
+  background: url('/assets/icons/navigation-add.png') no-repeat center center;
+  background-size: 24px 24px;
+}
+
+.icon-vos-trajets {
+  background: url('/assets/icons/navigation-map-marker.png') no-repeat center center;
+  background-size: 24px 24px;
+}
+
+.icon-profil {
+  background: url('/assets/icons/navigation-profil.png') no-repeat center center;
+  background-size: 24px 24px;
+}
+
+.icon-message {
+  background: url('/assets/icons/navigation-message.png') no-repeat center center;
+  background-size: 24px 24px;
+}
+
+.fr-bottom-nav__icon {
+  width: 24px; /* Ajuster la taille des icônes si nécessaire */
+  height: 24px;
+}
 </style>

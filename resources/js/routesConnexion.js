@@ -26,7 +26,7 @@ const routes = [
 ];
 
 const routerConnexion = createRouter({
-    history: createWebHistory(),
+    history: createWebHistory('/Application/public/'),
     routes,
   });
 

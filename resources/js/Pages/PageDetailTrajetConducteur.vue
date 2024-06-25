@@ -1,38 +1,66 @@
 <template>
-  <div class="bloc-principal">
-    <button class="back-button" @click="goBack">&#8678; Retour</button>
-    <h1>Trajet Conducteur</h1>
-    <div>
-      <p><span class="label">ID du trajet:</span> {{ trip.idTrajet }}</p>
-      <p><span class="label">Date:</span> {{ trip.Date_Depart }}</p>
-      <p><span class="label">Départ:</span> {{ trip.ptDepart }}</p>
-      <p><span class="label">Arrivée:</span> {{ trip.ptArrive }}</p>
-      <p><span class="label"> {{ trip.heure }}</span></p>
-    </div>
-    <h2 class="passengers-label" >Passagers</h2>
-    <div class="passenger-info" v-for="passager in trip.passagers" :key="passager.id" @click="voirReservation(passager)">
-      <p class="name"><span class="label">Nom:</span> {{ passager.prenomPassager }} {{ passager.nomPassager }}, <span class="label"> Unite :</span> {{ passager.unite }} <div v-if="passager.statut == 0" class="cercle"></div></p>
-      <span class="phone"><span class="label">Téléphone :</span> {{ passager.telephone }}</span>
-      <p class="contact-info">
-          <span class="route"><span class="label">Adresse :</span> {{ passager.adresse.Intitule }} <span v-if="passager.statut == 0" class="reservation">Réservation en attente ...</span></span>
-      </p>
-    </div>
-    <p class="passenger-count">{{ trip.nbPassagers }}/{{ trip.nbMaxPassagers }} passagers</p>
-    <div class="action-buttons">
-      <button class="modify-button" @click="modifyTrip">Modifier</button>
-      <button class="delete-button" @click="deleteTrip">Supprimer</button>
+  <div class="fr-container fr-mt-4w">
+    <div class="fr-grid-row fr-grid-row--gutters">
+      <div class="fr-col-12">
+
+        <button class="fr-btn fr-fi-arrow-left-line fr-btn--icon-left" @click="goBack">Retour</button>
+        <h1 class="fr-h2 fr-mt-3w">Mon trajet en conducteur</h1>
+        <div>
+          <div class="fr-col-12">
+            <h4 class="fr-h4 fr-mt-3w">Informations</h4>
+            <div class="">
+              <p><span class="label">Date de départ:</span> {{ trip.Date_Depart }}</p>
+              <p><span class="label">Départ:</span> {{ trip.ptDepart }}</p>
+              <p><span class="label">Arrivée:</span> {{ trip.ptArrive }}</p>
+            </div>
+            <h2 class="passengers-label">Passagers enregistrés</h2>
+            <div class="passenger-info" v-for="passager in trip.passagers" :key="passager.id"
+              @click="voirReservation(passager)">
+              <p class="name"><span class="label">Nom:</span> {{ passager.prenomPassager }} {{ passager.nomPassager }}
+              </p>
+              
+              <p class="unite"><span class="label"> Unité:</span> {{ passager.unite }}
+                <!-- <div v-if="passager.statut == 0" class="cercle"></div> -->
+              </p>
+              <p><span class="phone"><span class="label">Téléphone:</span> {{ passager.telephone }}</span></p>
+              <p class="contact-info">
+                <span class="route"><span class="label">Adresse:</span> {{ passager.adresse.Intitule }} <span
+                    v-if="passager.statut == 0" class="reservation"><span class="clignotant"></span>Réservation en attente d'une
+                    réponse...
+                  </span></span>
+              </p>
+            </div>
+            <p class="passenger-count">{{ trip.nbPassagers }}/{{ trip.nbMaxPassagers }} passagers</p>
+
+            <div class="fr-grid-row fr-grid-row--gutters fr-mt-3w">
+              <div class="fr-col-auto">
+                <button class="fr-btn fr-fi-edit-fill fr-btn--icon-left" @click="modifyTrip">
+                  Modifier
+                </button>
+              </div>
+              <div class="fr-col-auto">
+                <button class="fr-btn fr-btn--secondary fr-icon-delete-fill fr-btn--icon-left" @click="deleteTrip">
+                  Supprimer mon covoiturage
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
+
+
 </template>
 
 
 <script setup>
-  import { onMounted, ref } from 'vue';
-  import { useRoute, useRouter } from 'vue-router';
-  import axios from 'axios'
-  import { inject } from 'vue'
+import { onMounted, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import axios from 'axios'
+import { inject } from 'vue'
 
-  const afficherMessageFunc = inject('afficherMessageFunc'); // Fonction qui gère l'affichage de messages généraux sur App_Connexion.vue
+const afficherMessageFunc = inject('afficherMessageFunc'); // Fonction qui gère l'affichage de messages généraux sur App_Connexion.vue
 
 
 const trip = ref({});
@@ -40,29 +68,29 @@ const route = useRoute();
 const router = useRouter(); // Récupération du router vue-router pour la navigation
 
 const props = defineProps({
-    idTrajet: Number
+  idTrajet: Number
 })
 
 onMounted(() => {
   fetchTripDetails();
 });
 
-const fetchTripDetails = async () =>  {
-    console.log(route.query.idTrajet)
-    try {
-        const response = await axios.get('/api/trajets/' + route.query.idTrajet)
-        trip.value = response.data
-    } catch (error) {
-        console.error('Error fetching trajets:', error)
-    }
+const fetchTripDetails = async () => {
+  console.log(route.query.idTrajet)
+  try {
+    const response = await axios.get('/api/trajets/' + route.query.idTrajet)
+    trip.value = response.data
+  } catch (error) {
+    console.error('Error fetching trajets:', error)
   }
+}
 
 function goBack() {
   router.back();
 }
 
 function modifyTrip() {
-  router.push({path: '/modification-trajet'});
+  router.push({ path: '/modification-trajet' });
 }
 
 async function deleteTrip() {
@@ -81,13 +109,44 @@ async function deleteTrip() {
 
 function voirReservation(passager) {
   if (passager.statut == 0)
-    router.push({path: '/reservation',
-    query: { idReservation: passager.idReservation } });
+    router.push({
+      path: '/reservation',
+      query: { idReservation: passager.idReservation }
+    });
 }
 
 </script>
 
 <style scoped>
+.reservation{
+    display: flex;
+    align-items: center;
+    color: green;
+    animation: clignoter 2s infinite;
+    margin-bottom: 0%
+
+}
+
+.clignotant {
+    height: 20px;
+    width: 20px;
+    background-color: green;
+    border-radius: 50%;
+    display: inline-block;
+    margin-left: 5px;
+    margin-right: 5px;
+   
+}
+
+@keyframes clignoter {
+    0% { opacity: 1; }
+    50% { opacity: 0; }
+    100% { opacity: 1; }
+}
+.fr-grid-row--gutters {
+  justify-content: space-between;
+}
+
 .bloc-principal {
   padding: 20px;
   overflow-y: auto;
@@ -116,7 +175,7 @@ h1 {
   font-size: 1.7rem;
   color: #222;
   text-align: left;
-  ;
+  
 }
 
 .right-aligned {
@@ -146,28 +205,32 @@ h1 {
 }
 
 .cercle {
-    padding: 10px;
-    width: 20px;
-    color: #000;
-    float: right;
-    text-align: center;
+  padding: 10px;
+  width: 20px;
+  color: #000;
+  float: right;
+  text-align: center;
 
-    background: url('assets/icons/trajet-rond.png');
-    background-size: 20px 20px;
-    background-repeat: no-repeat;
-    background-position: center;
-  }
+  background: url('assets/icons/trajet-rond.png');
+  background-size: 20px 20px;
+  background-repeat: no-repeat;
+  background-position: center;
+}
 
-  .reservation {
-    float: right;
-  }
+.reservation {
+  float: right;
+}
 
 .passenger-info {
-  background-color: #f0f0f0;
+  background-color: white;
   padding: 15px;
   border-radius: 8px;
   margin-top: 10px;
   border: 1px solid #ccc;
+  
+}
+.passenger-info:hover{
+background-color: #f0f0f0;
 }
 
 .label {
@@ -193,7 +256,8 @@ p {
   text-align: center;
 }
 
-.modify-button, .delete-button {
+.modify-button,
+.delete-button {
   padding: 10px 20px;
   margin: 0 10px;
   font-size: 1rem;
@@ -219,5 +283,27 @@ p {
 .delete-button:hover {
   background-color: #da190b;
 }
+@media only screen and (max-width: 600px) {
+    .fr-container {
+        padding-bottom: 75px;
+    }
+}
 
+@media only screen and (max-width: 1024px) {
+    .fr-container {
+        padding-bottom: 75px;
+    }
+}
+
+@media only screen and (max-width: 1440px) {
+    .fr-container {
+        padding-bottom: 75px;
+    }
+}
+
+@media only screen and (max-width: 1920px) {
+    .fr-container {
+        padding-bottom: 75px;
+    }
+}
 </style>

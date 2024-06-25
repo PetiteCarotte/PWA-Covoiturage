@@ -22,6 +22,34 @@ const basesAeriennes = ref('')
 const departs = ref()
 const arrives = ref()
 
+// Constantes des contenus des différents champs Départ / Arrivé
+const depart = ref(props.ptDepart)
+const arrive = ref(props.ptArrive)
+const heure = ref()
+const date = ref()
+
+// Gèrent le grisage de la date (trajet régulier)
+const dateId = ref(['non-grise', 'grise'])
+const indexBouttonSwitch = ref(0)
+const estGrise = ref(false)
+const trajetRegulier = ref(false)
+
+const jours = ref(['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']);
+const jourValeur = ref([false, false, false, false, false, false, false]); // Tableau pour le modèle des checkboxes
+
+// Constantes pour l'affichage des données de recherche
+const typesDeTrajet = ref(['Domicile -> Base militaire', 'Base militaire -> Domicile'])
+const temp = ref() // Utilisé pour l'échange de données
+
+// Constante pour le sens du trajet
+const booleenTrajetBaseDomicile = ref(0)
+
+const router = useRouter() // Récupération du router vue-router pour la navigation
+
+// Constantes pour les passer les ids des base et domicile choisi dans la recherche
+const idDomicile = ref()
+const idBase = ref()
+
 /**
  * Récupère tout les domiciles de la base de données
  */
@@ -60,12 +88,6 @@ const recuperationBases = async () => {
     }
 }
 
-// Constantes des contenus des différents champs Départ / Arrivé
-const depart = ref(props.ptDepart)
-const arrive = ref(props.ptArrive)
-const heure = ref()
-const date = ref()
-
 /**
  * Appellé au chargement de la page, récupère alors tout les trajets (TODO : faire une recherche à paramètres)
  */
@@ -88,34 +110,11 @@ onMounted(() => {
 
 })
 
-// Gèrent le grisage de la date (trajet régulier)
-const dateId = ref(['non-grise', 'grise'])
-const indexBouttonSwitch = ref(0)
-const estGrise = ref(false)
-const trajetRegulier = ref(false)
-
 const changerIdGrise = () => {
     indexBouttonSwitch.value = (indexBouttonSwitch.value + 1) % dateId.value.length
     estGrise.value = !estGrise.value
 }
 
-// Constantes de jours pour les trajets réguliers
-const lundi = ref(true)
-const mardi = ref(true)
-const mercredi = ref(true)
-const jeudi = ref(true)
-const vendredi = ref(true)
-const samedi = ref(true)
-const dimanche = ref(true)
-
-// Constantes pour l'affichage des données de recherche
-const typesDeTrajet = ref(['Trajet Domicile -> Base', 'Trajet Base -> Domicile'])
-const heureDepartArrive = ref(['Heure de Départ', "Heure d'Arrivée"])
-
-const temp = ref() // Utilisé pour l'échange de données
-
-// Constante pour le sens du trajet
-const booleenTrajetBaseDomicile = ref(0)
 if (props.booleenTrajetBaseDomicile === 'true') {
     booleenTrajetBaseDomicile.value = 1
 }
@@ -140,12 +139,6 @@ const basculerTypeDeTrajet = () => {
     }
 
 }
-
-const router = useRouter() // Récupération du router vue-router pour la navigation
-
-// Constantes pour les passer les ids des base et domicile choisi dans la recherche
-const idDomicile = ref()
-const idBase = ref()
 
 /**
  * Charge tout les trajets dans le résultats de recherche
@@ -199,7 +192,7 @@ const recherche = () => {
                 idDomicile: idDomicile.value,
                 booleenTrajetBaseDomicile: trajetBaseDomicile.value,
                 typeTrajet: typeTrajet.value,
-                jours: [lundi, mardi, mercredi, jeudi, vendredi, samedi, dimanche],
+                jours: [jourValeur.value[0], jourValeur.value[1], jourValeur.value[2], jourValeur.value[3], jourValeur.value[4], jourValeur.value[5], jourValeur.value[6]],
                 heure: heure.value,
                 date: date.value
             }
@@ -210,78 +203,130 @@ const recherche = () => {
     }
 }
 
-
 </script>
 
 <template>
-    <div class="bloc-principal">
-        <div class="fr-container">
-    <div class="fr-grid-row fr-grid-row--center">
-      <div class="fr-col-12 fr-col-md-6">
-        <div class="" @click="basculerTypeDeTrajet">
-          <h1 class="fr-h4">{{ typesDeTrajet[booleenTrajetBaseDomicile] }}</h1>
-        </div>
-
-        <div class="fr-input-group fr-my-2w">
-          <label for="depart" class="fr-label">Départ</label>
-          <div class="fr-input-wrap">
-            <input list="liste-departs" v-model="depart" type="text" class="fr-input" id="depart" placeholder="Départ" />
-            <datalist id="liste-departs">
-              <option v-for="option in departs" :value="option.Intitule">{{ option.Intitule }}</option>
-            </datalist>
-          </div>
-        </div>
-
-        <div class="fr-input-group fr-my-2w">
-          <label for="arrive" class="fr-label">Arrivée</label>
-          <div class="fr-input-wrap">
-            <input list="liste-arrives" v-model="arrive" type="text" class="fr-input" id="arrive" placeholder="Arrivée" />
-            <datalist id="liste-arrives">
-              <option v-for="option in arrives" :value="option.Intitule">{{ option.Intitule }}</option>
-            </datalist>
-          </div>
-        </div>
-
-        <div class="fr-grid-row fr-grid-row--gutters">
-          <div class="fr-col-6">
-            <div class="fr-input-group fr-my-2w">
-              <label for="date" class="fr-label">Date</label>
-              <input type="date" v-model="date" class="fr-input" id="date" :disabled="trajetRegulier" />
+    <header role="banner" class="fr-header">
+        <div class="fr-header__body">
+            <div class="fr-container" id="container" style="padding-bottom: 15px;">
+                <div class="fr-header__body-row">
+                    <div class="fr-header__brand fr-enlarge-link">
+                        <div class="fr-header__brand-top">
+                            <div class="fr-header__logo">
+                                <a href="/">
+                                    <img src="/assets/logoapp.png" alt="Logo OuestGo" class="fr-logo-img" />
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
-          <div class="fr-col-6">
-            <div class="fr-input-group fr-my-2w">
-              <label for="heure" class="fr-label">Heure</label>
-              <input type="time" v-model="heure" class="fr-input" id="heure" />
+        </div>
+    </header>
+    <div class="fr-container">
+        <div class="fr-grid-row fr-grid-row--center">
+            <div class="fr-col-12 fr-col-md-6">
+                <div>
+                    <h3 class="fr-h3">Rechercher un covoiturage</h3>
+                </div>
+                <div class="" >
+                    <h4 class="fr-h4">{{ typesDeTrajet[booleenTrajetBaseDomicile] }}</h4>
+                </div>
+
+                <div class="fr-input-group fr-my-2w">
+                    <label for="depart" class="fr-label">Départ</label>
+                    <div class="fr-input-wrap">
+                        <input list="liste-departs" v-model="depart" type="text" class="fr-input" id="depart"
+                            placeholder="Départ" />
+                        <datalist id="liste-departs">
+                            <option v-for="option in departs" :value="option.Intitule">{{ option.Intitule }}</option>
+                        </datalist>
+                    </div>
+                </div>
+                <div class="fr-input-group fr-my-2w">
+                    <button class="icone-arrows" @click="basculerTypeDeTrajet">
+                    </button>
+                </div>
+
+                <div class="fr-input-group fr-my-2w">
+                    <label for="arrive" class="fr-label">Arrivée</label>
+                    <div class="fr-input-wrap">
+                        <input list="liste-arrives" v-model="arrive" type="text" class="fr-input" id="arrive"
+                            placeholder="Arrivée" />
+                        <datalist id="liste-arrives">
+                            <option v-for="option in arrives" :value="option.Intitule">{{ option.Intitule }}</option>
+                        </datalist>
+                    </div>
+                </div>
+
+                <div class="fr-grid-row fr-grid-row--gutters">
+                    <div class="fr-col-6">
+                        <div class="fr-input-group fr-my-2w">
+                            <label for="date" class="fr-label">Date</label>
+                            <input type="date" v-model="date" class="fr-input" id="date" :disabled="trajetRegulier" />
+                        </div>
+                    </div>
+                    <div class="fr-col-6">
+                        <div class="fr-input-group fr-my-2w">
+                            <label for="heure" class="fr-label">Heure</label>
+                            <input type="time" v-model="heure" class="fr-input" id="heure" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="fr-checkbox-group fr-my-2w">
+                    <input type="checkbox" id="trajetRegulier" class="fr-checkbox-input" v-model="trajetRegulier"
+                        @change="changerIdGrise" />
+                    <label for="trajetRegulier" class="fr-label">Trajet Régulier</label>
+                </div>
+
+                <div v-if="trajetRegulier" class="fr-grid-row fr-grid-row--gutters">
+                    <div class="fr-checkbox-group fr-my-2w fr-col-4" v-for="(jour, index) in jours" :key="index">
+                        <input type="checkbox" :id="jour" class="fr-checkbox-input" v-model="jourValeur[index]" />
+                        <label :for="jour" class="fr-label">{{ jour }}</label>
+                    </div>
+                </div>
+
+                <div class="fr-grid-row fr-grid-row--center fr-my-2w">
+                    <div class="fr-col-auto">
+                        <button class="fr-btn" @click="recherche">Rechercher</button>
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
-
-        <div v-if="trajetRegulier" class="fr-grid-row fr-grid-row--gutters">
-          <div v-for="jour in jours" :key="jour" class="fr-col-3">
-            <input type="checkbox" :id="jour" class="fr-checkbox-input" v-model="jourValeur[jour]" />
-            <label :for="jour" class="fr-label">{{ jour }}</label>
-          </div>
-        </div>
-
-        <div class="fr-checkbox-group fr-my-2w">
-          <input type="checkbox" id="trajetRegulier" class="fr-checkbox-input" v-model="trajetRegulier" @change="changerIdGrise" />
-          <label for="trajetRegulier" class="fr-label">Trajet Régulier</label>
-        </div>
-
-        <div class="fr-grid-row fr-grid-row--gutters fr-my-2w">
-          
-          <div class="fr-col">
-            <button class="fr-btn" @click="recherche">Rechercher</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
     </div>
 </template>
 
 <style scoped>
+
+.fr-header__body{
+    color: #0053b3;
+
+}
+.fr-logo-img {
+    max-height: 60px; 
+    width: auto; 
+    display: block; 
+    margin: 0 auto; 
+    border-radius: 10%;
+    justify-content: center;
+}
+
+
+.fr-h3 {
+    padding-top: 20px;
+}
+
+.icone-arrows {
+    background: url('assets/icons/fleches-bidirection.png');
+    background-size: 30px 30px;
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 100%;
+    height: 25px;
+    justify-content: center;
+}
+
 .type-de-trajet {
     background-color: #dddddd;
     width: 90%;
@@ -306,38 +351,6 @@ const recherche = () => {
     justify-content: space-between;
 }
 
-.icone-map {
-    background: url('assets/icons/navigation-map-marker.png');
-    background-size: 30px 30px;
-    background-repeat: no-repeat;
-    background-position: center;
-    width: 50px;
-    height: 50px;
-}
-
-.label {
-    border: none;
-    border-bottom: 1px solid #dddddd;
-    height: 50px;
-    width: 100%;
-}
-
-.date-et-heure {
-    display: flex;
-    flex-direction: row;
-    width: 65%;
-    margin-top: 30px;
-    margin-left: 17.5%;
-    height: 50px;
-
-    justify-content: space-between;
-}
-
-.bloc-date,
-.bloc-heure {
-    display: flex;
-    flex-direction: row;
-}
 
 input[type="date"],
 input[type="time"] {
@@ -355,125 +368,27 @@ input[type="time"] {
     clear: both;
 }
 
-.icone-date {
-    background: url('assets/icons/recherche-calendrier.png');
-    background-size: 30px 30px;
-    background-repeat: no-repeat;
-    background-position: center;
-    width: 50px;
-    height: 50px;
-    padding-right: 50px;
-    padding-bottom: 10px;
+@media only screen and (max-width: 600px) {
+    .fr-container {
+        padding-bottom: 75px;
+    }
 }
 
-.icone-heure {
-    background: url('assets/icons/recherche-horloge.png');
-    background-size: 30px 30px;
-    background-repeat: no-repeat;
-    background-position: center;
-    width: 50px;
-    height: 50px;
-    padding-right: 50px;
-    padding-bottom: 10px;
+@media only screen and (max-width: 1024px) { 
+    .fr-container {
+        padding-bottom: 75px;
+    }
 }
 
-.input-checkbox {
-    display: none;
+@media only screen and (max-width: 1440px) { 
+    .fr-container {
+        padding-bottom: 75px;
+    }
 }
 
-.switch-label {
-    display: block;
-    width: 50px;
-    height: 30px;
-    background-color: #ccc;
-    border-radius: 20px;
-    position: relative;
-    cursor: pointer;
-    margin-right: 5px;
-}
-
-.input-checkbox:checked+.switch-label {
-    background-color: #007bff;
-}
-
-.switch-label::after {
-    content: "";
-    position: absolute;
-    top: 4px;
-    left: 4px;
-    width: 22px;
-    height: 22px;
-    background-color: white;
-    border-radius: 50%;
-    transition: transform 0.3s;
-}
-
-.input-checkbox:checked+.switch-label::after {
-    transform: translateX(20px);
-}
-
-#grise {
-    filter: opacity(50%);
-    transition: filter 0.5s ease;
-}
-
-#non-grise {
-    filter: opacity(100%);
-    transition: filter 0.5s ease;
-}
-
-p {
-    border-top: 5px;
-    color: black;
-}
-
-.trajet-regulier {
-    display: flex;
-    flex-direction: row;
-    height: 50px;
-    width: 190px;
-    margin: auto;
-    text-align: center;
-
-    justify-content: space-between;
-}
-
-.rechercher {
-    background-color: #bbbbbb;
-    width: 120px;
-    height: 40px;
-    margin: auto;
-    border-radius: 10px;
-}
-
-.intitule-rechercher {
-    padding-top: 3px;
-    text-align: center;
-}
-
-p,
-input {
-    font-size: 20px;
-}
-
-v-digital-time-picker {
-    width: 100px;
-    height: 100px;
-}
-
-.jours {
-    display: flex;
-    flex-direction: row;
-    width: 80%;
-    margin-top: 30px;
-    margin-left: 10%;
-    height: 50px;
-
-    justify-content: space-between;
-}
-
-.jour {
-    margin: auto;
-    color: black;
+@media only screen and (max-width: 1920px) { 
+    .fr-container {
+        padding-bottom: 75px;
+    }
 }
 </style>

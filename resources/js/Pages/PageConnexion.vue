@@ -65,12 +65,28 @@ const motdepasseoublie = () => {
 </script>
 
 <template>
-    <div class="bloc-principal">
+    <header role="banner" class="fr-header">
+        <div class="fr-header__body">
+            <div class="fr-container" id="container" style="padding-bottom: 15px;">
+                <div class="fr-header__body-row">
+                    <div class="fr-header__brand fr-enlarge-link">
+                        <div class="fr-header__brand-top">
+                            <div class="fr-header__logo">
+                                <a href="/">
+                                    <img src="/assets/logoapp.png" alt="Logo OuestGo" class="fr-logo-img" />
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
 
         <div class="fr-container">
             <h1 class="fr-h1">Connexion</h1>
             <div class="fr-grid-row fr-grid-row--center fr-mb-3w">
-                <div class="fr-col-12 fr-col-md-6">
+                <div class="sp-container--narrow">
                     <div class="fr-input-group">
                         <label for="identifiant" class="fr-label">Mail ou NID</label>
                         <input type="text" id="identifiant" class="fr-input" v-model="identifiant"
@@ -95,23 +111,20 @@ const motdepasseoublie = () => {
                 </div>
             </div>
         </div>
-    </div>
 </template>
 
 <style scoped>
-
-.bloc-label {
-    display: flex;
-    flex-direction: row;
-    height: 50px;
-    width: 75%;
-    margin-left: 12.5%;
-    justify-content: space-between;
-    margin-bottom: 10px;
+.fr-logo-img {
+    max-height: 60px; 
+    width: auto; 
+    display: block; 
+    margin: 0 auto; 
+    border-radius: 10%;
+    justify-content: center;
 }
 
 input {
-    width: 90%;
+    width: 100%;
     font-size: medium;
     border: none;
     border-bottom: 1px solid #dddddd;
@@ -164,5 +177,28 @@ h1 {
 .lien-mot-de-passe-oublie {
     border-top: auto;
     justify-content: right;
+}
+@media only screen and (max-width: 600px) {
+    .fr-container {
+        padding-bottom: 75px;
+    }
+}
+
+@media only screen and (max-width: 1024px) {
+    .fr-container {
+        padding-bottom: 75px;
+    }
+}
+
+@media only screen and (max-width: 1440px) {
+    .fr-container {
+        padding-bottom: 75px;
+    }
+}
+
+@media only screen and (max-width: 1920px) {
+    .fr-container {
+        padding-bottom: 75px;
+    }
 }
 </style>

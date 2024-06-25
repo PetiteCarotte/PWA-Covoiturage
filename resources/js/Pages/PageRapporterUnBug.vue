@@ -102,4 +102,27 @@ p{
   text-align: center;
   font-size: 20px;
 }
+@media only screen and (max-width: 600px) {
+    .fr-container {
+        padding-bottom: 75px;
+    }
+}
+
+@media only screen and (max-width: 1024px) {
+    .fr-container {
+        padding-bottom: 75px;
+    }
+}
+
+@media only screen and (max-width: 1440px) {
+    .fr-container {
+        padding-bottom: 75px;
+    }
+}
+
+@media only screen and (max-width: 1920px) {
+    .fr-container {
+        padding-bottom: 75px;
+    }
+}
 </style>
